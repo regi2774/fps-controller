@@ -58,7 +58,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float sprintMultiplier = 1.5f;
     [SerializeField] private float crouchMultiplier = 1.5f;
     float speedMultiplier;
-    [Header("Rocket Jump Settings")]
+    [Header("Rocket Jump")]
     [SerializeField] private float rocketJumpMultiplier = 1.5f;
     [SerializeField] private float minJumpHeight = 2f;
     [SerializeField] private float maxJumpHeight = 10f;
@@ -66,7 +66,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float minVerticalForce = 3f; // Força vertical mínima garantida
     [SerializeField] private float wallJumpVerticalBoost = 2f; // Bônus ao pular de paredes
 
-    [Header("Wall Climb/Jump Settings")]
+    [Header("Wall Climb/Jump")]
     [SerializeField] private float wallSlideSpeed = 3f;
     [SerializeField] private float wallRunSpeed = 5f;
     [SerializeField] private float wallClimbSpeed= 4f;
@@ -234,7 +234,7 @@ public class Player : MonoBehaviour
             isJumping = false;
         }
 
-        // Handle wall sliding
+        
         if (isWallSliding)
         {
             AudioManager.Instance.HandleWallSliding(wallSlideSound);
@@ -244,12 +244,12 @@ public class Player : MonoBehaviour
         }
        
 
-        // Apply normal gravity if not wall sliding
+        
         else if (!isGrounded)
         {
             velocity.y -= gravity * Time.deltaTime;
         }
-        // State 1 - Wallrunning
+       
         if((wallLeft || wallRight) && input.y > 0 && AboveGround())
         {
             if (!wallRunning)
@@ -268,12 +268,12 @@ public class Player : MonoBehaviour
             if (PlayerInputManager.Instance.JumpPressed && isGrounded)
             {
                 PerformJump();
-                fallStartHeight = transform.position.y; // Reseta ao pular
+                fallStartHeight = transform.position.y;
             }
             else if (PlayerInputManager.Instance.JumpPressed && (isWallSliding || wallStickTimer > 0) && wallJumpsRemaining > 0)
             {
                 PerformWallJump();
-                fallStartHeight = transform.position.y; // Reseta ao wall jump
+                fallStartHeight = transform.position.y; 
             }
         }
     }
@@ -388,7 +388,7 @@ public class Player : MonoBehaviour
     } 
     private void WallRunningMovement()
     {
-        // Reset vertical velocity while wall running
+        
         velocity = new Vector3(velocity.x, 0f, velocity.z);
         float verticalInput = PlayerInputManager.Instance.Vertical;
         float horizontalInput = PlayerInputManager.Instance.Horizontal;
@@ -396,20 +396,20 @@ public class Player : MonoBehaviour
         //Vector3 wallNormal = wallRight ? rightWallhit.normal : leftWallhit.normal;
         Vector3 wallForward = Vector3.Cross(wallNormal, transform.up);
 
-        // Determine the correct wall forward direction
+        
         if ((orientation.forward - wallForward).magnitude > (orientation.forward - -wallForward).magnitude)
             wallForward = -wallForward;
 
-        // Calculate movement direction
+        
         Vector3 moveDirection = verticalInput * wallRunSpeed * wallForward;
 
-        // Apply upwards/downwards movement
+        
         if (upwardsRunning)
             moveDirection.y = wallClimbSpeed;
         if (downwardsRunning)
             moveDirection.y = -wallClimbSpeed;
 
-        // Apply push to wall force
+        
         if (!(wallLeft && horizontalInput > 0) && !(wallRight && horizontalInput < 0))
             moveDirection += -wallNormal * 5f;
 
@@ -417,7 +417,7 @@ public class Player : MonoBehaviour
         {
             moveDirection += -wallNormal * wallStickForce;
         }
-        // Apply the movement
+       
         velocity = moveDirection;
     }
        
@@ -435,8 +435,8 @@ public class Player : MonoBehaviour
         {
             isMoving = false;
             input = Vector2.zero;
-            velocity = new Vector3(0, velocity.y, 0); // Reseta a velocidade do jogador
-            return; // Sai do método completamente
+            velocity = new Vector3(0, velocity.y, 0);
+            return;
         }
 
         if(!alwaysRun){
@@ -551,7 +551,7 @@ public class Player : MonoBehaviour
         direction.y = Mathf.Clamp(direction.y + 0.5f, 0.2f, 1f);
         direction.Normalize();
         
-        // Aplica o impulso considerando CharacterController
+        // Aplica o impulso
         velocity.x = direction.x * calculatedForce * horizontalForceMultiplier;
         velocity.z = direction.z * calculatedForce * horizontalForceMultiplier;
         velocity.y = direction.y * calculatedForce;
